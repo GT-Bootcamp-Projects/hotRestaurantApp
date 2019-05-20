@@ -4,7 +4,7 @@
   "description": "A plus-ultra version of the express app, Hot Restaurant",
   "main": "src/server.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test nyc mocha --recursive",
+    "test": "eslint src/**/*.js && cross-env NODE_ENV=test nyc mocha --recursive --exit",
     "start": "node src/server.js",
     "clean": "if [ -d node_modules ]; then rm -r node_modules; fi",
     "build": "babel src -d dist"
@@ -24,6 +24,7 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-istanbul": "^5.1.4",
     "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
@@ -31,6 +32,7 @@
     "jsdoc": "^3.6.2",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
+    "prettier": "^1.17.1",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0"
   },

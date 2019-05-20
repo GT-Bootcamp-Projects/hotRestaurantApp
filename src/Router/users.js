@@ -2,10 +2,10 @@ const router = require('express').Router();
 const { users } = require('../Models');
 
 // User management routes
-router.route('/users')
-  .post(users.create);
+router.route('/users').post(users.create);
 
-router.route('/users/:id')
+router
+  .route('/users/:id')
   .get(users.get)
   .put(users.update)
   .delete(users.delete);

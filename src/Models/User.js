@@ -1,4 +1,4 @@
-const dbConnection = require('./db/connection');
+const dbConnection = require('./db/connection').connection;
 
 class User {
   constructor(connection) {
@@ -9,69 +9,106 @@ class User {
     };
   }
 
-  get({ params: { id } }, res) {
-    this.db.query(`SELECT * FROM users WHERE id = ${id}`, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json(this.errMsg);
+  get({ params }, res) {
+    const result = this.db.query(
+      `SELECT * FROM users WHERE id = ${params.id}`,
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          return err;
+        }
+
+        return result;
       }
+    );
 
-      res.json({ statusCode: 200, message: result });
-    });
+    if (result instanceof Error) {
+      return res.json(this.errMsg);
+    }
 
-    this.db.end();
+    return res.json({ status: 200, message: result });
   }
 
-  getReservations({ params: { id } }, res) {
-    this.db.query(`SELECT * FROM reservations WHERE userId = ${id}`, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json(this.errMsg);
-      }
+  getReservations({ params }, res) {
+    const result = this.db.query(
+      `SELECT * FROM reservations WHERE userId = ${params.id}`,
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          return err;
+        }
 
-      res.json({ statusCode: 200, message: result });
-    });
+        return result;
+      }
+    );
+
+    if (result instanceof Error) {
+      return res.json(this.errMsg);
+    }
+
+    return res.json({ status: 200, message: result });
   }
 
   create(req, res) {
-    this.db.query(`INSERT INTO users (username) VALUES (${req.body.user})`, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json(this.errMsg);
+    const result = this.db.query(
+      `INSERT INTO users (username) VALUES (${req.body.user})`,
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          return err;
+        }
+
+        return result;
       }
+    );
 
-      res.json({ statusCode: 200, message: result.insertId });
-    });
+    if (result instanceof Error) {
+      return res.json(this.errMsg);
+    }
 
-    this.db.end();
+    return res.json({ status: 200, message: result });
   }
 
-  update({ params: { id }, body }, res) {
-    this.db.query(`UPDATE users SET ? WHERE id = ${id}`, body, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json(this.errMsg);
+  update({ params, body }, res) {
+    const result = this.db.query(
+      `UPDATE users SET ? WHERE id = ${params.id}`,
+      body,
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          return err;
+        }
+
+        return result;
       }
+    );
 
-      res.json({ statusCode: 200, message: result });
-    });
+    if (result instanceof Error) {
+      return res.json(this.errMsg);
+    }
 
-    this.db.end();
+    return res.json({ status: 200, message: result });
   }
 
-  delete({ params: { id } }, res) {
-    this.db.query(`DELETE FROM users WHERE id = ${id}`, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json(this.errMsg);
+  delete({ params }, res) {
+    const result = this.db.query(
+      `DELETE FROM users WHERE id = ${params.id}`,
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          return err;
+        }
+
+        return result;
       }
+    );
 
-      res.json({ statusCode: 200, message: 'User successfully deleted' });
-    });
+    if (result instanceof Error) {
+      return res.json(this.errMsg);
+    }
 
-    this.db.end();
+    return res.json({ status: 200, message: result });
   }
 }
 
 module.exports = User;
-

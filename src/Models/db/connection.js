@@ -6,5 +6,4 @@ module.exports = {
     const dbConfig = getDbConfig();
     return mysql.createConnection(dbConfig);
   }
-}
-
+};

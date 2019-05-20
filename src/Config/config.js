@@ -1,10 +1,6 @@
 const pkg = require('../../package.json');
-const jwks = require('jwks-rsa');
 const ENVIRONMENT = process.env.ENVIRONMENT;
-const PORT = process.env.PORT || 8080;
-const AUTH_URI = process.env.AUTH_URI;
-const AUTH_AUDIENCE = process.env.AUTH_AUDIENCE;
-const AUTH_ISSUER = process.env.AUTH_ISSUER;
+const PORT = process.env.PORT || 5000;
 const DB_HOST = process.env.DB_HOST;
 const DB_PORT = process.env.DB_PORT || 3306;
 const DB_USER = process.env.DB_USER;
@@ -20,34 +16,20 @@ const health = {
   version: pkg.version,
   environment: ENVIRONMENT,
   error: null
-}
+};
 
 const setHealth = (err, status) => {
   health.error = {
     name: err.name,
     message: err.message,
     stack: err.stack
-  }
+  };
 
   health.status = status;
-}
+};
 
 const healthCheck = () => {
   return health;
-}
-
-const jwtValidator = () => {
-  return {
-    secret: jwks.expressJwtSecret({
-      cache: 5,
-      rateLimit: true,
-      jwksRequestsPerMinute: 5,
-      jwksUri: AUTH_URI
-    }),
-    audience: AUTH_AUDIENCE,
-    issuer: AUTH_ISSUER,
-    algorithms: ['RS256']
-  }
 };
 
 const getDbConfig = () => {
@@ -56,19 +38,24 @@ const getDbConfig = () => {
     user: DB_USER,
     password: DB_PASS,
     database: DB_DATABASE
-  }
+  };
 };
 
 const config = {
-  port: () => PORT,
+  getPort: () => PORT,
+  getHostname: () => hostname,
+  getEnvironment: () => ENVIRONMENT,
+  getVersion: () => pkg.version,
+  getApplication: () => pkg.name,
   getDbHost: () => DB_HOST,
   getDbUser: () => DB_USER,
   getDbPass: () => DB_PASS,
   getDbPort: () => DB_PORT,
   getDb: () => DB_DATABASE,
   getDbConfig,
-  jwtValidator
-}
+  healthCheck,
+  setHealth
+};
 
 const errors = [];
 
@@ -94,6 +81,5 @@ for (const f in config) {
 if (errors.length) {
   throw errors.join('\n');
 }
-
 
 module.exports = config;

@@ -1,0 +1,43 @@
+{
+  "getAll": [
+    {
+      "id": 1,
+      "userId": 1,
+      "reservationDateTime": "2019-05-20T19:38:38.766Z",
+      "waitingList": false
+    },
+    {
+      "id": 2,
+      "userid": 5,
+      "reservationDateTime": "2019-05-20T19:38:38.766Z",
+      "waitingList": false
+    },
+    {
+      "id": 3,
+      "userid": 2,
+      "reservationDateTime": "2019-05-20T19:38:38.766Z",
+      "waitingList": true
+    }
+  ],
+
+  "getOne": {
+    "id": 1,
+    "userId": 1,
+    "reservationDateTime": "2019-05-20T19:38:38.766Z",
+    "waitingList": false
+  },
+
+  "post": {
+    "insertId": 4
+  },
+
+  "update": {
+    "insertId": 4
+  },
+
+  "delete": {
+    "insertId": 4
+  }
+}
+
+

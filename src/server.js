@@ -1,24 +1,32 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { reservationRouter, userRouter } = require('./Router');
-const { port } = require('./Config/config');
+const { getPort, healthCheck, setHealth } = require('./Config/config');
 
+const port = getPort();
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-app.use(function(req, res, next) {
+const requestLogger = (req, res, next) => {
   // log every request to the console
   console.log(req.method, req.url);
 
   // continue as normal
   next();
-});
+};
 
-// Loading routes
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.use(requestLogger);
+
+// Loading API routes
 app.use('/api', reservationRouter);
 app.use('/api', userRouter);
+
+app.get('/_healthcheck', (req, res) => {
+  const health = healthCheck();
+  res.json(health);
+});
 
 app.listen(port, () => {
   console.log(`API listening on port ${port}`);
