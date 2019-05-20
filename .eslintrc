@@ -1,0 +1,53 @@
+{
+  "root" : true,
+  "extends": [
+    "prettier"
+  ],
+  "plugins": [
+    "prettier"
+  ],
+  "env": {
+    "node": true,
+    "mocha": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 8
+  },
+  "rules": {
+    "brace-style": 2,
+    "camelcase": 2,
+    "comma-dangle": [2, "never"],
+    "comma-style": 2,
+    "dot-notation": 2,
+    "eol-last": 2,
+    "eqeqeq": 2,
+    "key-spacing": 2,
+    "max-len": ["warn", {"tabWidth": 2, "code": 100}],
+    "no-array-constructor": 2,
+    "no-dupe-keys": 2,
+    "no-eq-null": 2,
+    "no-extra-boolean-cast": 2,
+    "no-extra-parens": [2, "functions"],
+    "no-multi-spaces": 2,
+    "no-multi-str": 2,
+    "no-new-object": 2,
+    "no-shadow-restricted-names": 2,
+    "no-spaced-func": 2,
+    "no-unused-vars": 2,
+    "no-use-before-define": 0,
+    "no-var": 2,
+    "object-shorthand": 2,
+    "one-var": [2, "never"],
+    "prefer-const": 2,
+    "prettier/prettier": "error",
+    "semi-spacing": 2,
+    "semi": [2, "always"],
+    "space-before-blocks": 2,
+    "space-infix-ops": 2,
+    "spaced-comment": 2,
+    "strict": 0,
+    "use-isnan": 2,
+    "valid-jsdoc": 0
+  }
+}

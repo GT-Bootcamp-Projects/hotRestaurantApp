@@ -1,0 +1,15 @@
+{
+  "extends": "@istanbuljs/nyc-config-babel",
+  "check-coverage": true,
+  "sourceMap": false,
+  "instrument": false,
+  "lines": 90,
+  "statements": 90,
+  "functions": 90,
+  "branches": 50,
+  "reporter": [
+    "text",
+    "text-summary"
+  ]
+}
+

@@ -1,0 +1,44 @@
+{
+  "name": "hotrestaurant-advanced",
+  "version": "1.0.0",
+  "description": "A plus-ultra version of the express app, Hot Restaurant",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test nyc mocha --recursive",
+    "start": "node src/server.js",
+    "clean": "if [ -d node_modules ]; then rm -r node_modules; fi",
+    "build": "babel src -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GT-Bootcamp-Projects/hotRestaurantApp"
+  },
+  "author": "Shahein Moussavi",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/register": "^7.4.4",
+    "@istanbuljs/nyc-config-babel": "^2.1.1",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-istanbul": "^5.1.4",
+    "chai": "^4.2.0",
+    "cross-env": "^5.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jsdoc": "^3.6.2",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
+    "sinon": "^7.3.2",
+    "sinon-chai": "^3.3.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.0",
+    "express-jwt": "^5.3.1",
+    "jwks-rsa": "^1.5.0",
+    "mysql": "^2.17.1"
+  }
+}
