@@ -13,7 +13,18 @@ This is a new and improved version of the Hot Restaurant activity from lesson 13
 
 ## Running locally
 ### Server
-Coming soon...
+The obvious:
+```shell
+npm install
+```
+Run the tests like so:
+```shell
+make test
+```
+Modify the `Makefile` to connect to your local instance of mysql to run the server locally:
+```shell
+make dev
+```
 
 ### Vue app
 Coming soon...

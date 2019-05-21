@@ -1,9 +1,15 @@
 const mysql = require('mysql');
-const { getDbConfig } = require('../../Config/config');
+const { getDbConfig, setHealth } = require('../../Config/config');
 
-module.exports = {
-  connection: () => {
-    const dbConfig = getDbConfig();
-    return mysql.createConnection(dbConfig);
+/* istanbul ignore next */
+const dbConfig = getDbConfig();
+const connection = mysql.createConnection(dbConfig);
+
+connection.connect(err => {
+  if (err) {
+    console.log(err);
+    setHealth(err, 500);
   }
-};
+});
+
+module.exports = connection;

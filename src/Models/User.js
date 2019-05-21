@@ -1,113 +1,18 @@
-const dbConnection = require('./db/connection').connection;
+const Database = require('./Database');
 
-class User {
-  constructor(connection) {
-    this.db = connection ? connection : dbConnection();
-    this.errMsg = {
-      statusCode: 500,
-      message: 'An error occurred on your query'
-    };
-  }
-
-  get({ params }, res) {
-    const result = this.db.query(
-      `SELECT * FROM users WHERE id = ${params.id}`,
-      (err, result) => {
-        if (err) {
-          console.log(err);
-          return err;
-        }
-
-        return result;
-      }
-    );
-
-    if (result instanceof Error) {
-      return res.json(this.errMsg);
-    }
-
-    return res.json({ status: 200, message: result });
+class User extends Database {
+  constructor(connection, schema) {
+    super(connection, schema);
   }
 
   getReservations({ params }, res) {
-    const result = this.db.query(
-      `SELECT * FROM reservations WHERE userId = ${params.id}`,
-      (err, result) => {
-        if (err) {
-          console.log(err);
-          return err;
-        }
-
-        return result;
-      }
-    );
-
-    if (result instanceof Error) {
-      return res.json(this.errMsg);
-    }
-
-    return res.json({ status: 200, message: result });
-  }
-
-  create(req, res) {
-    const result = this.db.query(
-      `INSERT INTO users (username) VALUES (${req.body.user})`,
-      (err, result) => {
-        if (err) {
-          console.log(err);
-          return err;
-        }
-
-        return result;
-      }
-    );
-
-    if (result instanceof Error) {
-      return res.json(this.errMsg);
-    }
-
-    return res.json({ status: 200, message: result });
-  }
-
-  update({ params, body }, res) {
-    const result = this.db.query(
-      `UPDATE users SET ? WHERE id = ${params.id}`,
-      body,
-      (err, result) => {
-        if (err) {
-          console.log(err);
-          return err;
-        }
-
-        return result;
-      }
-    );
-
-    if (result instanceof Error) {
-      return res.json(this.errMsg);
-    }
-
-    return res.json({ status: 200, message: result });
-  }
-
-  delete({ params }, res) {
-    const result = this.db.query(
-      `DELETE FROM users WHERE id = ${params.id}`,
-      (err, result) => {
-        if (err) {
-          console.log(err);
-          return err;
-        }
-
-        return result;
-      }
-    );
-
-    if (result instanceof Error) {
-      return res.json(this.errMsg);
-    }
-
-    return res.json({ status: 200, message: result });
+    this.query(
+      `SELECT r.*, u.name FROM reservations r JOIN users u ON r.userId = u.id WHERE userId = ${
+        params.id
+      }`
+    ).then(result => {
+      return this.analyzeResult(result, res);
+    });
   }
 }
 

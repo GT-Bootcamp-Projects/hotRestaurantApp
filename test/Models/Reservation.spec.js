@@ -63,7 +63,7 @@ describe('Reservations methods', () => {
   it('should return insertId when post() is called', () => {
     const conn = connection(mockReservationResults.post);
     const reservation = new Reservation(conn);
-    const result = reservation.post(postReq, res);
+    const result = reservation.create(postReq, res);
 
     result.should.not.be.null;
     result.status.should.be.equals(200);

@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { reservationRouter, userRouter } = require('./Router');
-const { getPort, healthCheck, setHealth } = require('./Config/config');
+const { getPort, healthCheck } = require('./Config/config');
 
 const port = getPort();
 const app = express();
