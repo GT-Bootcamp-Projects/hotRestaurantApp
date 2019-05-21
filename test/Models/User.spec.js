@@ -1,8 +1,12 @@
+require('@babel/polyfill');
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const User = require('../../src/Models/User');
+const Database = require('../../src/Models/Database');
 const mockUserResults = require('./mockData/mockUserResults.json');
+
+const sandbox = sinon.createSandbox();
 
 chai.should();
 chai.use(sinonChai);
@@ -46,47 +50,56 @@ describe('User constructor', () => {
 });
 
 describe('User methods', () => {
-  let connection;
+  let stubber;
+  let user;
 
   beforeEach(() => {
-    connection = model => {
-      return {
-        query: sinon.stub().returns(model)
-      };
+    user = new User(null, 'users');
+    stubber = model => {
+      sandbox.stub(Database.prototype, '_query').resolves(model);
     };
   });
 
-  it('should return individual user when get() is called', () => {
-    const conn = connection(mockUserResults.get);
-    const user = new User(conn);
-    const result = user.getOne(paramReq, res);
+  afterEach(() => {
+    sandbox.restore();
+  });
 
-    result.should.not.be.null;
-    result.status.should.be.equals(200);
-    result.message.should.be.deep.equals(mockUserResults.get);
+  it('should return individual user when get() is called', () => {
+    stubber(mockUserResults.get);
+
+    user.getOne(paramReq, res).then(result => {
+      console.log('SHAHEIN ==> ', result);
+
+      result.should.not.be.null;
+      result.status.should.be.equals(200);
+      result.message.should.be.deep.equals(mockUserResults.get);
+    });
   });
 
   it('should return an error message if the query errors', () => {
-    const conn = connection(testErr);
-    const user = new User(conn);
-    const errResult = user.getOne(paramReq, res);
+    stubber(testErr);
 
-    errResult.should.not.be.null;
-    errResult.status.should.be.equals(500);
-    errResult.should.be.deep.equals(errMsg);
+    user.getOne(paramReq, res).then(errResult => {
+      errResult.should.not.be.null;
+      errResult.status.should.be.equals(500);
+      errResult.should.be.deep.equals(errMsg);
+    });
   });
 
   it('should return insertId when create() is called', () => {
+    stubber(mockUserResults.create);
     const conn = connection(mockUserResults.create);
     const user = new User(conn);
-    const result = user.create(postReq, res);
 
-    result.should.not.be.null;
-    result.status.should.be.equals(200);
-    result.message.should.be.deep.equals(mockUserResults.create);
+    user.create(postReq, res).then(result => {
+      result.should.not.be.null;
+      result.status.should.be.equals(200);
+      result.message.should.be.deep.equals(mockUserResults.create);
+    });
   });
 
   it('should return an error message if the query errors', () => {
+    stubber(testErr);
     const conn = connection(testErr);
     const user = new User(conn);
     const errResult = user.create(postReq, res);
@@ -154,23 +167,5 @@ describe('User methods', () => {
     errResult.should.not.be.null;
     errResult.status.should.be.equals(500);
     errResult.should.be.deep.equals(errMsg);
-  });
-
-  it('queryCallback() should return result from db if successful', () => {
-    const conn = connection('good stuff');
-    const user = new User(conn);
-    const result = user.queryCallback(null, 'good stuff');
-
-    result.should.not.be.null;
-    result.should.be.equals('good stuff');
-  });
-
-  it('queryCallback() should return an error if one is present', () => {
-    const conn = connection('bad stuff');
-    const user = new User(conn);
-    const result = user.queryCallback('bad stuff', null);
-
-    result.should.not.be.null;
-    result.should.be.equals('bad stuff');
   });
 });

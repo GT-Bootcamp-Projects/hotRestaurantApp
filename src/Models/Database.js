@@ -4,9 +4,14 @@ class Database {
   constructor(connection, schema) {
     this.db = connection;
     this.schema = schema;
+    this.select = `SELECT * FROM ${this.schema} WHERE id = ?`;
+    this.selectAll = `SELECT * FROM ${this.schema}`;
+    this.insert = `INSERT INTO ${this.schema} SET ?`;
+    this.update = `UPDATE ${this.schema} SET ? WHERE id = ?`;
+    this.delete = `DELETE FROM ${this.schema} WHERE id = ?`;
   }
 
-  query(sql) {
+  _query(sql) {
     return new Promise(resolve => {
       this.db.query(sql, (err, result) => {
         if (err) resolve(err);
@@ -16,55 +21,97 @@ class Database {
     });
   }
 
-  analyzeResult(result, res) {
+  _analyzeResult(result) {
     if (result instanceof Error) {
-      return res.json({
-        status: 500,
-        message: result
-      });
+      return { status: 500, message: result };
     }
 
-    return res.json({ status: 200, message: result });
+    return { status: 200, message: result };
   }
 
-  create({ body }, res) {
-    const sql = formatter(`INSERT INTO ${this.schema} SET ?`, body);
-    this.query(sql).then(result => {
-      return this.analyzeResult(result, res);
-    });
+  async query(queryType, opts) {
+    const sql = formatter(queryType, opts);
+    const result = await this._query(sql);
+
+    return this._analyzeResult(result);
   }
 
-  getAll(req, res) {
-    this.query(`SELECT * FROM ${this.schema}`).then(result => {
-      return this.analyzeResult(result, res);
-    });
-  }
-
-  getOne({ params }, res) {
-    this.query(`SELECT * FROM ${this.schema} WHERE id = ${params.id}`).then(
-      result => {
-        return this.analyzeResult(result, res);
+  _sanitize(body) {
+    return new Promise((resolve, reject) => {
+      const sanitizedObj = {};
+      for (const key in body) {
+        if (this.hasOwnProperty(key)) {
+          sanitizedObj[key] = body[key];
+        }
       }
-    );
-  }
 
-  update({ params, body }, res) {
-    const sql = formatter(
-      `UPDATE ${this.schema} SET ? WHERE id = ${params.id}`,
-      body
-    );
+      if (
+        Object.entries(sanitizedObj).length === 0 &&
+        sanitizedObj.constructor === Object
+      ) {
+        reject(new Error('No usable keys sent!'));
+      }
 
-    this.query(sql).then(result => {
-      return this.analyzeResult(result, res);
+      resolve(sanitizedObj);
     });
   }
 
-  delete({ params }, res) {
-    this.query(`DELETE FROM ${this.schema} WHERE id = ${params.id}`).then(
-      result => {
-        return this.analyzeResult(result, res);
-      }
-    );
+  async create(req, res) {
+    try {
+      const user = await this._sanitize(req.body);
+      const result = await super.query(this.insert, user);
+      console.log(result);
+
+      return res.json(result);
+    } catch (err) {
+      console.log(err);
+      return res.json({ status: 500, message: err.message });
+    }
+  }
+
+  async getOne(req, res) {
+    try {
+      const result = await super.query(this.select, req.params.id);
+
+      return res.json(result);
+    } catch (err) {
+      console.log(err);
+      return res.json({ status: 500, message: err });
+    }
+  }
+
+  async getAll(req, res) {
+    try {
+      const result = await super.query(this.selectAll, req.params.id);
+
+      return res.json(result);
+    } catch (err) {
+      console.log(err);
+      return res.json({ status: 500, message: err });
+    }
+  }
+
+  async update(req, res) {
+    try {
+      const user = await this._sanitize(req.body);
+      const result = await super.query(this.update, user);
+
+      return res.json(result);
+    } catch (err) {
+      console.log(err);
+      return res.json({ status: 500, message: err.message });
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const result = await super.query(this.delete, req.params.id);
+
+      return res.json(result);
+    } catch (err) {
+      console.log(err);
+      return res.json({ status: 500, message: err });
+    }
   }
 }
 
