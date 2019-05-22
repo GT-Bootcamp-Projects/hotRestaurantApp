@@ -8,7 +8,7 @@ dev:
 	PORT=${PORT} \
 	ENVIRONMENT=dev \
 	DB_USER=shahein \
-	DB_PASS="" \
+	DB_PASS="bul15!t-pass" \
 	DB_DATABASE=hotrestaurant \
 	DB_PORT=3306 \
 	DB_HOST=localhost \

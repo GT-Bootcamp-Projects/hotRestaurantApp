@@ -3,7 +3,10 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const Reservation = require('../../src/Models/Reservation');
+const Database = require('../../src/Models/Database');
 const mockReservationResults = require('./mockData/mockReservationResults.json');
+
+const sandbox = sinon.createSandbox();
 
 chai.should();
 chai.use(sinonChai);
@@ -16,8 +19,15 @@ const paramReq = {
 
 const postReq = {
   body: {
-    fakeData: 'yay'
+    userId: 1,
+    reservationDateTime: '2019-05-20T19:38:38.766Z',
+    waitingList: false
   }
+};
+
+const updateReq = {
+  params: paramReq.params,
+  body: postReq.body
 };
 
 const res = {
@@ -40,64 +50,62 @@ describe('Reservations constructor', () => {
 });
 
 describe('Reservations methods', () => {
-  let connection;
+  let stubber;
+  const conn = sinon.stub().returns(true);
+  const reservation = new Reservation(conn, 'reservations');
 
   beforeEach(() => {
-    connection = model => {
-      return {
-        query: sinon.stub().returns(model),
-        end: sinon.stub().returns(true)
-      };
+    stubber = model => {
+      sandbox.stub(Database.prototype, '_query').resolves(model);
     };
   });
 
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it('should return an insertId when create() is called', () => {
+    stubber(mockReservationResults.post);
+    return reservation.create(postReq, res).then(result => {
+      result.should.not.be.null;
+      result.status.should.be.equals(200);
+      result.message.should.be.deep.equals(mockReservationResults.post);
+    });
+  });
+
   it('should return all reservations when getAll() is called', () => {
-    const conn = connection(mockReservationResults.getAll);
-    const reservation = new Reservation(conn);
-    const result = reservation.getAll(null, res);
-
-    result.should.not.be.null;
-    result.status.should.be.equals(200);
-    result.message.should.be.deep.equals(mockReservationResults.getAll);
+    stubber(mockReservationResults.getAll);
+    return reservation.getAll(null, res).then(result => {
+      result.should.not.be.null;
+      result.status.should.be.equals(200);
+      result.message.should.be.deep.equals(mockReservationResults.getAll);
+    });
   });
 
-  it('should return insertId when post() is called', () => {
-    const conn = connection(mockReservationResults.post);
-    const reservation = new Reservation(conn);
-    const result = reservation.create(postReq, res);
-
-    result.should.not.be.null;
-    result.status.should.be.equals(200);
-    result.message.should.be.deep.equals(mockReservationResults.post);
-  });
-
-  it('should return a single reservation when getOne() is called', () => {
-    const conn = connection(mockReservationResults.getOne);
-    const reservation = new Reservation(conn);
-    const result = reservation.getOne(paramReq, res);
-
-    result.should.not.be.null;
-    result.status.should.be.equals(200);
-    result.message.should.be.deep.equals(mockReservationResults.getOne);
+  it('should return a reservation when getOne() is called', () => {
+    stubber(mockReservationResults.getOne);
+    return reservation.getOne(paramReq, res).then(result => {
+      result.should.not.be.null;
+      result.status.should.be.equals(200);
+      result.message.should.be.deep.equals(mockReservationResults.getOne);
+    });
   });
 
   it('should return a reservation id when update() is called', () => {
-    const conn = connection(mockReservationResults.update);
-    const reservation = new Reservation(conn);
-    const result = reservation.update(paramReq, res);
-
-    result.should.not.be.null;
-    result.status.should.be.equals(200);
-    result.message.should.be.deep.equals(mockReservationResults.update);
+    stubber(mockReservationResults.update);
+    return reservation.update(updateReq, res).then(result => {
+      result.should.not.be.null;
+      result.status.should.be.equals(200);
+      result.message.should.be.deep.equals(mockReservationResults.update);
+    });
   });
 
   it('should return a reservation id when delete() is called', () => {
-    const conn = connection(mockReservationResults.delete);
-    const reservation = new Reservation(conn);
-    const result = reservation.delete(paramReq, res);
-
-    result.should.not.be.null;
-    result.status.should.be.equals(200);
-    result.message.should.be.deep.equals(mockReservationResults.delete);
+    stubber(mockReservationResults.delete);
+    return reservation.delete(paramReq, res).then(result => {
+      result.should.not.be.null;
+      result.status.should.be.equals(200);
+      result.message.should.be.deep.equals(mockReservationResults.delete);
+    });
   });
 });

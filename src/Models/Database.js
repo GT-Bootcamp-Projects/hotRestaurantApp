@@ -4,11 +4,11 @@ class Database {
   constructor(connection, schema) {
     this.db = connection;
     this.schema = schema;
-    this.select = `SELECT * FROM ${this.schema} WHERE id = ?`;
+    this.selectOne = `SELECT * FROM ${this.schema} WHERE id = ?`;
     this.selectAll = `SELECT * FROM ${this.schema}`;
     this.insert = `INSERT INTO ${this.schema} SET ?`;
-    this.update = `UPDATE ${this.schema} SET ? WHERE id = ?`;
-    this.delete = `DELETE FROM ${this.schema} WHERE id = ?`;
+    this.modify = `UPDATE ${this.schema} SET ? WHERE id = ?`;
+    this.remove = `DELETE FROM ${this.schema} WHERE id = ?`;
   }
 
   _query(sql) {
@@ -19,21 +19,6 @@ class Database {
         resolve(result);
       });
     });
-  }
-
-  _analyzeResult(result) {
-    if (result instanceof Error) {
-      return { status: 500, message: result };
-    }
-
-    return { status: 200, message: result };
-  }
-
-  async query(queryType, opts) {
-    const sql = formatter(queryType, opts);
-    const result = await this._query(sql);
-
-    return this._analyzeResult(result);
   }
 
   _sanitize(body) {
@@ -56,62 +41,38 @@ class Database {
     });
   }
 
-  async create(req, res) {
-    try {
-      const user = await this._sanitize(req.body);
-      const result = await super.query(this.insert, user);
-      console.log(result);
+  async query(queryType, opts) {
+    const sql = formatter(queryType, opts);
+    const result = await this._query(sql);
 
-      return res.json(result);
-    } catch (err) {
-      console.log(err);
-      return res.json({ status: 500, message: err.message });
+    if (result instanceof Error) {
+      return { status: 500, message: result };
+    } else if (result.length === 0) {
+      return { status: 404, message: 'Not found' };
     }
+
+    return { status: 200, message: result };
   }
 
-  async getOne(req, res) {
-    try {
-      const result = await super.query(this.select, req.params.id);
+  async idQuery(sql, id) {
+    const result = await this.query(sql, id);
 
-      return res.json(result);
-    } catch (err) {
-      console.log(err);
-      return res.json({ status: 500, message: err });
-    }
+    return result;
   }
 
-  async getAll(req, res) {
-    try {
-      const result = await super.query(this.selectAll, req.params.id);
+  async create(data) {
+    const input = await this._sanitize(data);
+    const result = await this.query(this.insert, input);
 
-      return res.json(result);
-    } catch (err) {
-      console.log(err);
-      return res.json({ status: 500, message: err });
-    }
+    return result;
   }
 
-  async update(req, res) {
-    try {
-      const user = await this._sanitize(req.body);
-      const result = await super.query(this.update, user);
+  async updateTable(data, opts) {
+    const input = await this._sanitize(data);
+    opts.unshift(input);
+    const result = await this.query(this.modify, opts);
 
-      return res.json(result);
-    } catch (err) {
-      console.log(err);
-      return res.json({ status: 500, message: err.message });
-    }
-  }
-
-  async delete(req, res) {
-    try {
-      const result = await super.query(this.delete, req.params.id);
-
-      return res.json(result);
-    } catch (err) {
-      console.log(err);
-      return res.json({ status: 500, message: err });
-    }
+    return result;
   }
 }
 

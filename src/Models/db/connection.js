@@ -1,7 +1,7 @@
+/* istanbul ignore file */
 const mysql = require('mysql');
 const { getDbConfig, setHealth } = require('../../Config/config');
 
-/* istanbul ignore next */
 const dbConfig = getDbConfig();
 const connection = mysql.createConnection(dbConfig);
 
