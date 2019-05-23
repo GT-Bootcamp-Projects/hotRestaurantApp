@@ -31,7 +31,7 @@ make dev
 cd client
 npm install
 ```
-Ensure that the server is running before running the Vue app, even better if you can seed the database a bit.
+Ensure that the server is running before running the Vue app, even better if you can seed the database a bit (the schema script is in `scripts/schema.sql`).
 ```shell
 npm run serve
 ```
