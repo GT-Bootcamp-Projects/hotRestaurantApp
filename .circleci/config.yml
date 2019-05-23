@@ -4,7 +4,7 @@ references:
   defaults: &defaults
     working_directory: ~/opt
     docker:
-      - image: node:lts-alpine
+      - image: circleci/node:lts
 
   workspace_root: &workspace_root
     ~/opt
@@ -66,7 +66,7 @@ jobs:
           command: heroku login
       - run:
           name: Build app image
-          command: docker build -t gtcbc/hotrestaurant-api .
+          command: docker build --no-cache -t gtcbc/hotrestaurant-api .
       - run:
           name: Login to registry
           command: heroku container:login
