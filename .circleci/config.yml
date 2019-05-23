@@ -4,7 +4,7 @@ references:
   defaults: &defaults
     working_directory: ~/opt
     docker:
-      - image: circleci/node:lts-alpine
+      - image: node:lts-alpine
 
   workspace_root: &workspace_root
     ~/opt
