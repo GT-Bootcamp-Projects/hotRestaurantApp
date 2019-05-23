@@ -1,26 +1,41 @@
 <template>
-  <div v-if="profile">
-    <div>
-      <div>
-        <img :src="profile.picture">
-      </div>
-      <div>
-        <h2>{{ profile.name }}</h2>
-        <p>{{ profile.email }}</p>
-      </div>
-    </div>
+  <v-layout row>
+    <v-flex xs12 sm6 offset-sm3>
+      <v-card v-if="profile">
+        <v-img :aspect-ratio="16/9" :src="profile.picture"></v-img>
 
-    <div>
-      <pre>{{ JSON.stringify(profile, null, 2) }}</pre>
-    </div>
-  </div>
+        <v-card-primary-title>
+          <div>
+            <div class="headline mb-0">{{ profile.nickname }}</div>
+            <span class="gray--text">{{ profile.email }}</span>
+          </div>
+        </v-card-primary-title>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="show = !show">
+            <v-icon>{{
+              show ? 'keyboard_arrow_down' : 'keyboard_arrow_up'
+            }}</v-icon>
+          </v-btn>
+        </v-card-actions>
+
+        <v-card-y-transition>
+          <v-card-text v-show="show">
+            <pre>{{ JSON.stringify(profile, null, 2) }}</pre>
+          </v-card-text>
+        </v-card-y-transition>
+      </v-card>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      profile: this.$auth.profile
+      profile: this.$auth.profile,
+      show: false
     };
   },
   methods: {
@@ -30,4 +45,3 @@ export default {
   }
 };
 </script>
-

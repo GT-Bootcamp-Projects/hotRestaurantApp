@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "express": "^4.17.0",
     "express-jwt": "^5.3.1",
     "jwks-rsa": "^1.5.0",

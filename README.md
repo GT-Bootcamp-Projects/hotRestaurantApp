@@ -27,8 +27,24 @@ make dev
 ```
 
 ### Vue app
-Coming soon...
+```shell
+cd client
+npm install
+```
+Ensure that the server is running before running the Vue app, even better if you can seed the database a bit.
+```shell
+npm run serve
+```
+The Vue application will open on `localhost:8081`.  I've configured CORS on the express server (running on `localhost:5000`) for now, so that shouldn't be an issue.
 
 ## Contributing
-Please don't, at least for now.
+There's still plenty to do here, such as --
+- Tests on the client!
+- Building out the componentry on the client - making the Vue app a little simpler to step into.
+- Adding some routes to allow for more specific queries
+- Adding Vuex to the project to pass data from the database around a little easier
+- Integrating Auth0 better or even building out a new auth client
+- I'm sure there's much more
+
+All that said, I'm probably going to stop after I add the Dockerfile and set up the CI/CD builds.  If you're a student of mine, it could be a fun challenge to fork this repo and try to do some of the things listed above, or whatever you want to do with the app!
 

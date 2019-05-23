@@ -3,10 +3,13 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import Callback from './components/Callback.vue';
 import Profile from './views/Profile.vue';
+import auth from './auth/authService';
+import Reservations from './views/Reservations.vue';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -31,6 +34,21 @@ export default new Router({
       path: '/profile',
       name: 'profile',
       component: Profile
+    },
+    {
+      path: '/reservations',
+      name: 'reservations',
+      component: Reservations
     }
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.path === "/" || to.path === "/callback" || auth.isAuthenticated()) {
+    return next();
+  }
+
+  auth.login({ target: to.path });
+});
+
+export default router;

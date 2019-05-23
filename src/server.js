@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const { reservationRouter, userRouter } = require('./Router');
 const { getPort, healthCheck } = require('./Config/config');
@@ -17,6 +18,7 @@ const requestLogger = (req, res, next) => {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use(cors());
 app.use(requestLogger);
 
 // Loading API routes

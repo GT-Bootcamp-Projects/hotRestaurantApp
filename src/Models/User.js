@@ -7,6 +7,9 @@ class User extends Database {
     this.name = name;
     this.email = email;
     this.phone = phone;
+    this.findByEmail = name => {
+      return `SELECT id FROM users WHERE email LIKE '${name}%'`;
+    };
   }
 
   async create({ body }, res) {
@@ -20,7 +23,14 @@ class User extends Database {
     },
     res
   ) {
-    const result = await super.idQuery(this.selectOne, id);
+    let sql;
+    if (isNaN(parseInt(id))) {
+      sql = this.findByEmail(id);
+    } else {
+      sql = this.selectOne;
+    }
+
+    const result = await super.idQuery(sql, id);
     return res.json(result);
   }
 
