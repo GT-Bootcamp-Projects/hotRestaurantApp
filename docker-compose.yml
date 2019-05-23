@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  server:
+    build: .
+    expose:
+      - ${PORT}
+    environment:
+      PORT: ${PORT}
+      ENVIRONMENT: ${ENVIRONMENT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_HOST: ${DB_HOST}
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./src:/opt/hotrestaurant-api/src
+    command: npm start
+
+  client:
+    build: ./client
+    expose:
+      - ${FE_PORT}
+    environment:
+      FE_PORT: ${FE_PORT}
+      API_HOST: ${API_HOST}
+    ports:
+      - ${FE_PORT}:80
+    volumes:
+      - ./client/src:/app/src
+      - ./client/public:/app/public
+      - ./client/dist:/app/dist
+    links:
+      - server
+    command: nginx -g "daemon off;"

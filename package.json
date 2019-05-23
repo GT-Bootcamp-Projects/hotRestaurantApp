@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "test": "eslint src/**/*.js && cross-env NODE_ENV=test nyc mocha --recursive --exit",
-    "start": "node src/server.js",
+    "start": "node dist/server.js",
+    "dev": "node src/server.js",
     "clean": "if [ -d node_modules ]; then rm -r node_modules; fi",
     "build": "babel src -d dist"
   },

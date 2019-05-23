@@ -1,0 +1,94 @@
+version: 2
+
+references:
+  defaults: &defaults
+    working_directory: ~/opt
+    docker:
+      - image: circleci/node:lts-alpine
+
+  workspace_root: &workspace_root
+    ~/opt
+
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
+jobs:
+  install_dependencies:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - node_modules
+
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - *attach_workspace
+      - run:
+          name: npm test
+          command: npm test
+
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - *attach_workspace
+      - run:
+          name: npm run build
+          command: npm run build
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - dist
+
+  catalog:
+    docker:
+      - image: gtcbc/hotrestaurant-api:latest
+    working_directory: ~/app
+    steps:
+      - checkout
+      - *attach_workspace
+      - setup_remote_docker
+      - run:
+          name: Setup Environment Variable
+          command: |
+            echo "export PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F= "{ print $2 }" | sed 's/[version:,\",]//g' | tr -d '[[:space:]]')" >> $BASH_ENV
+            echo "export BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD | tr / -)" >> $BASH_ENV
+      - run:
+          name: Login to Heroku
+          command: heroku login
+      - run:
+          name: Build app image
+          command: docker build -t gtcbc/hotrestaurant-api .
+      - run:
+          name: Login to registry
+          command: heroku container:login
+      - run:
+          name: Push app image to registry
+          command: heroku container:push gtcbc/hotrestaurant-api
+      - run:
+          name: Trigger deployment
+          command: heroku container:release gtcbc/hotrestaurant-api
+
+workflows:
+  version: 2
+  test_build_deploy:
+    jobs:
+      - install_dependencies
+      - test:
+          requires:
+            - install_dependencies
+      - build:
+          requires:
+            - test
+      - catalog:
+          requires:
+            - build
+
