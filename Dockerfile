@@ -1,5 +1,7 @@
 FROM node:lts-alpine
 
+RUN apk add --no-cache ca-certificates
+
 WORKDIR /opt/hotrestaurant-api
 
 # copy both 'package.json' and 'package-lock.json' (if available)
